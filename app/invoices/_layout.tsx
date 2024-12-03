@@ -6,18 +6,20 @@ export default function GenerateInvoiceLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false
-
+          headerShown: false,
         }}
-
       />
       <Stack.Screen
         name="recipient"
         options={{
-          headerShown: false
-
+          headerShown: false,
         }}
-
+      />
+      <Stack.Screen
+        name="invoice-info"
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );

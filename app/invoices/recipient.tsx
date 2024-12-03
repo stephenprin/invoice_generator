@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import { Button } from '~/components/Button';
 import CustomTextInput from '~/components/CustomTextInput';
+import { router } from "expo-router";
 
 const recipientInfoSchema = z.object({
   name: z
@@ -36,8 +37,10 @@ export default function GenerateInvoice() {
       taxId: '1245665',
     },
   });
-  console.log(errors);
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    console.log(data);
+    router.push('/invoices/invoice-info');
+  };
 
   return (
     <KeyboardAvoidingView
