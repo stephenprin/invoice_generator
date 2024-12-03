@@ -9,6 +9,15 @@ export default function GenerateInvoiceLayout() {
           headerShown: false
 
         }}
+
+      />
+      <Stack.Screen
+        name="recipient"
+        options={{
+          headerShown: false
+
+        }}
+
       />
     </Stack>
   );
