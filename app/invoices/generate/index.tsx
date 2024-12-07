@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
@@ -22,11 +22,7 @@ const senderInfoSchema = z.object({
 type SenderData = z.infer<typeof senderInfoSchema>;
 
 export default function GenerateInvoice() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SenderData>({
+  const form = useForm<SenderData>({
     resolver: zodResolver(senderInfoSchema),
     defaultValues: {
       name: 'Janion Limited',
@@ -35,47 +31,45 @@ export default function GenerateInvoice() {
       taxId: '1245665',
     },
   });
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = form;
   const onSubmit = (data) => {
     console.log(data);
-    router.push('/invoices/recipient');
+    router.push('/invoices/generate/recipient');
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1">
-      <SafeAreaView edges={['bottom']} className="m-4 flex-1">
-        <Text className="mb-5 gap-2 text-2xl font-bold">Sender Info</Text>
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <CustomTextInput
-            control={control}
-            name="name"
-            label="Business Name"
-            placeholder="Enter your business name"
-          />
-          <CustomTextInput
-            control={control}
-            name="address"
-            label="Address"
-            placeholder="Enter your address"
-            multiline
-          />
-          <CustomTextInput
-            control={control}
-            name="email"
-            label="Email"
-            placeholder="Enter your email"
-            keyboardType="email-address"
-          />
-          <CustomTextInput
-            control={control}
-            name="taxId"
-            label="Tax ID"
-            placeholder="Enter your tax ID"
-          />
-        </ScrollView>
-        <Button title="Next" className="my-4" onPress={handleSubmit(onSubmit)} />
-      </SafeAreaView>
+      <FormProvider {...form}>
+        <SafeAreaView edges={['bottom']} className="m-4 flex-1">
+          <Text className="mb-5 gap-2 text-2xl font-bold">Sender Info</Text>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <CustomTextInput
+              name="name"
+              label="Business Name"
+              placeholder="Enter your business name"
+            />
+            <CustomTextInput
+              name="address"
+              label="Address"
+              placeholder="Enter your address"
+              multiline
+            />
+            <CustomTextInput
+              name="email"
+              label="Email"
+              placeholder="Enter your email"
+              keyboardType="email-address"
+            />
+            <CustomTextInput name="taxId" label="Tax ID" placeholder="Enter your tax ID" />
+          </ScrollView>
+          <Button title="Next" className="my-4" onPress={handleSubmit(onSubmit)} />
+        </SafeAreaView>
+      </FormProvider>
     </KeyboardAvoidingView>
   );
 }

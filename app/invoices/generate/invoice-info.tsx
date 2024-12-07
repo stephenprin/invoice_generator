@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
@@ -37,11 +38,7 @@ const formattedDueDate = formatDate(dueDate);
 type InvoiceInfoData = z.infer<typeof invoiceInfoSchema>;
 
 export default function GenerateInvoice() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<InvoiceInfoData>({
+  const form = useForm<InvoiceInfoData>({
     resolver: zodResolver(invoiceInfoSchema),
     defaultValues: {
       invoiceNumber: 'INV-001',
@@ -49,34 +46,30 @@ export default function GenerateInvoice() {
       dueDate: formattedDueDate,
     },
   });
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = form;
   console.log(errors);
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    router.push('/invoices/generate/items');
+  };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1">
-      <SafeAreaView edges={['bottom']} className="m-4 flex-1">
-        <Text className="mb-5 gap-2 text-2xl font-bold">Invoice Info</Text>
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <CustomTextInput
-            control={control}
-            name="invoiceNumber"
-            label="Invoice Number"
-          />
-          <CustomTextInput
-            control={control}
-            name="date"
-            label="Date"
-          />
-          <CustomTextInput
-            control={control}
-            name="dueDate"
-            label="Due Date"
-          />
-        </ScrollView>
-        <Button title="Next" className="my-4" onPress={handleSubmit(onSubmit)} />
-      </SafeAreaView>
+      <FormProvider {...form}>
+        <SafeAreaView edges={['bottom']} className="m-4 flex-1">
+          <Text className="mb-5 gap-2 text-2xl font-bold">Invoice Info</Text>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <CustomTextInput name="invoiceNumber" label="Invoice Number" />
+            <CustomTextInput name="date" label="Date" />
+            <CustomTextInput name="dueDate" label="Due Date" />
+          </ScrollView>
+          <Button title="Next" className="my-4" onPress={handleSubmit(onSubmit)} />
+        </SafeAreaView>
+      </FormProvider>
     </KeyboardAvoidingView>
   );
 }
