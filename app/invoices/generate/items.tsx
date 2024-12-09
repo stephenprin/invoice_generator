@@ -49,7 +49,7 @@ export default function GenerateInvoice() {
 
   const onSubmit = (data) => {
     console.log(data);
-    router.push('/');
+    router.push('/invoices/generate/summary');
   };
 
   return (
