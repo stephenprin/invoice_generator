@@ -36,6 +36,7 @@ export default function GenerateInvoice() {
     },
   });
   const {
+    watch,
     handleSubmit,
     formState: { errors },
   } = form;
@@ -44,6 +45,7 @@ export default function GenerateInvoice() {
     control: form.control,
     name: 'items',
   });
+  const watchedItems = watch('items');
 
   const onSubmit = (data) => {
     console.log(data);
@@ -58,45 +60,58 @@ export default function GenerateInvoice() {
         <SafeAreaView edges={['bottom']} className="m-4 flex-1">
           <Text className="mb-5 gap-2 text-2xl font-bold">Items</Text>
           <ScrollView keyboardShouldPersistTaps="handled">
-            {fields.map((item, index) => (
-              <View key={index} className="mb-4">
-                <Text className="text-lg font-semibold">{index + 1}</Text>
-                <CustomTextInput
-                  name={`items.${index}.name`}
-                  label="Name"
-                  placeholder="Enter your Item name"
-                  onChangeText={(value) => form.setValue(`items.${index}.name`, value)}
-                />
-                <View className="flex-row gap-4">
-                  <View className="flex-1">
+            <View className="gap-3">
+              <View  className=" shadow">
+                {fields.map((item, index) => (
+                  <View key={index} className="mb-4  rounded-lg bg-gray-50 p-4">
+                    <Text className="text-lg font-semibold mb-2">Item {index + 1}</Text>
                     <CustomTextInput
-                      name={`items.${index}.quantity`}
-                      label="Quantity"
-                      keyboardType="numeric"
-                      placeholder="Enter your quantity"
-                      onChangeText={(value) => {
-                        form.setValue(`items.${index}.quantity`, Number(value));
-                      }}
+                      name={`items.${index}.name`}
+                      label="Name"
+                      placeholder="Enter your Item name"
+                      onChangeText={(value) => form.setValue(`items.${index}.name`, value)}
                     />
-                  </View>
-                  <View className="flex-1">
-                    <CustomTextInput
-                      name={`items.${index}.price`}
-                      label="Price"
-                      keyboardType="numeric"
-                      placeholder="Enter your price"
-                      onChangeText={(value) => form.setValue(`items.${index}.price`, Number(value))}
-                    />
-                  </View>
-                </View>
+                    <View className="flex-row gap-4">
+                      <View className="flex-1">
+                        <CustomTextInput
+                          name={`items.${index}.price`}
+                          label="Price"
+                          keyboardType="numeric"
+                          placeholder="Enter your price"
+                          onChangeText={(value) => form.setValue(`items.${index}.price`, Number(value))}
+                        />
+                      </View>
+                      <View className="flex-1">
+                        <CustomTextInput
+                          name={`items.${index}.quantity`}
+                          label="Quantity"
+                          keyboardType="numeric"
+                          placeholder="Enter your quantity"
+                          onChangeText={(value) => {
+                            form.setValue(`items.${index}.quantity`, Number(value));
+                          }}
+                        />
+                      </View>
 
-                <Button title="Remove" className="mt-2 bg-red-500" onPress={() => remove(index)} />
+                      <View className="flex-1 items-center">
+                        <Text className="text-md font-bold text-gray-500">Total</Text>
+                        <Text className=" font-bold text-green-800 mt-4">
+                          $ {watchedItems[index]?.price * watchedItems[index]?.quantity || 0}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Button title="Remove" className="mt-2 bg-red-500" onPress={() => remove(index)} />
+                  </View>
+                ))}
               </View>
-            ))}
+
+            </View>
 
             <Button
               title="Add Item"
-              className="mt-4 bg-green-500"
+              className="mt-4"
+              variant="link"
               onPress={() => append({ name: '', price: 0, quantity: 1 })}
             />
           </ScrollView>
