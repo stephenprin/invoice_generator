@@ -4,26 +4,16 @@ import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { z } from 'zod';
 
 import { Button } from '~/components/Button';
 import CustomTextInput from '~/components/CustomTextInput';
-
-const senderInfoSchema = z.object({
-  name: z
-    .string({ required_error: 'Business name is required' })
-    .min(1, 'Business name is required'),
-  email: z.string({ required_error: 'Email is required' }).email('Invalid email address'),
-  address: z.string({ required_error: 'Address is required' }).min(4, 'Address is too short'),
-  taxId: z.string().optional(),
-});
-
-// Infer TypeScript type from the schema
-type SenderData = z.infer<typeof senderInfoSchema>;
+import { BusinessInfo, businessInfoSchema } from '~/schema/invoice';
+import { useStore } from '~/store/store';
 
 export default function GenerateInvoice() {
-  const form = useForm<SenderData>({
-    resolver: zodResolver(senderInfoSchema),
+  const addSenderInfo = useStore((data) => data.addSenderInfo);
+  const form = useForm<BusinessInfo>({
+    resolver: zodResolver(businessInfoSchema),
     defaultValues: {
       name: 'Janion Limited',
       address: '23n Janion LimitedLagos',
@@ -36,7 +26,7 @@ export default function GenerateInvoice() {
     formState: { errors },
   } = form;
   const onSubmit = (data) => {
-    console.log(data);
+    addSenderInfo(data);
     router.push('/invoices/generate/recipient');
   };
 

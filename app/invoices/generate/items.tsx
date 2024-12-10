@@ -8,21 +8,17 @@ import { z } from 'zod';
 
 import { Button } from '~/components/Button';
 import CustomTextInput from '~/components/CustomTextInput';
+import { invoiceItemsSchema } from '~/schema/invoice';
+import { useStore } from '~/store/store';
 
-const invoiceItemsSchema = z.object({
-  name: z.string({ required_error: 'Name is required' }).min(1, 'Name is required'),
-  price: z.number({ required_error: 'Price is required' }).min(1, 'Price is too short'),
-  quantity: z.number({ required_error: 'Quantity is required' }).min(1, 'Quantity is required'),
-});
-
-// Infer TypeScript type from the schema
-type InvoiceItemsData = z.infer<typeof invoiceItemsSchema>;
 const itemSchema = z.object({
   items: invoiceItemsSchema.array(),
 });
 type Items = z.infer<typeof itemSchema>;
 
 export default function GenerateInvoice() {
+  const addItems = useStore((data) => data.addItems);
+
   const form = useForm<Items>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
@@ -48,7 +44,7 @@ export default function GenerateInvoice() {
   const watchedItems = watch('items');
 
   const onSubmit = (data) => {
-    console.log(data);
+    addItems(data.items);
     router.push('/invoices/generate/summary');
   };
 
@@ -61,10 +57,10 @@ export default function GenerateInvoice() {
           <Text className="mb-5 gap-2 text-2xl font-bold">Items</Text>
           <ScrollView keyboardShouldPersistTaps="handled">
             <View className="gap-3">
-              <View  className=" shadow">
+              <View className=" shadow">
                 {fields.map((item, index) => (
                   <View key={index} className="mb-4  rounded-lg bg-gray-50 p-4">
-                    <Text className="text-lg font-semibold mb-2">Item {index + 1}</Text>
+                    <Text className="mb-2 text-lg font-semibold">Item {index + 1}</Text>
                     <CustomTextInput
                       name={`items.${index}.name`}
                       label="Name"
@@ -78,7 +74,9 @@ export default function GenerateInvoice() {
                           label="Price"
                           keyboardType="numeric"
                           placeholder="Enter your price"
-                          onChangeText={(value) => form.setValue(`items.${index}.price`, Number(value))}
+                          onChangeText={(value) =>
+                            form.setValue(`items.${index}.price`, Number(value))
+                          }
                         />
                       </View>
                       <View className="flex-1">
@@ -95,17 +93,20 @@ export default function GenerateInvoice() {
 
                       <View className="flex-1 items-center">
                         <Text className="text-md font-bold text-gray-500">Total</Text>
-                        <Text className=" font-bold text-green-800 mt-4">
+                        <Text className=" mt-4 font-bold text-green-800">
                           $ {watchedItems[index]?.price * watchedItems[index]?.quantity || 0}
                         </Text>
                       </View>
                     </View>
 
-                    <Button title="Remove" className="mt-2 bg-red-500" onPress={() => remove(index)} />
+                    <Button
+                      title="Remove"
+                      className="mt-2 bg-red-500"
+                      onPress={() => remove(index)}
+                    />
                   </View>
                 ))}
               </View>
-
             </View>
 
             <Button
