@@ -12,12 +12,32 @@ export default function InvoiceSummary() {
   const getTotal = useStore((data) => data.getTotal);
 
   return (
-    <View className="flex-1 bg-gray-100 p-4">
-      <ScrollView>
+    <View className="flex-1 bg-gray-100">
+      {/* Header */}
+      <View className="bg-white p-4 shadow-md">
+        <Text className="text-left text-3xl font-bold">
+          Invoice #{newInvoice.invoiceInfo?.invoiceNumber || 'N/A'}
+        </Text>
+        <View className="mt-3 flex-row justify-between">
+
+          <View className="flex-col items-start">
+            <Text className="text-sm font-medium color-gray-500"> Date</Text>
+            <Text className="font-medium"> {new Date(newInvoice.invoiceInfo?.date || '').toLocaleDateString()}</Text>
+          </View>
+          <View className="flex-col items-start
+          ">
+            <Text className="text-sm font-medium color-gray-500">Due Date</Text>
+            <Text className="font-medium"> {new Date(newInvoice.invoiceInfo?.dueDate || '').toLocaleDateString()}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Content */}
+      <ScrollView className="p-4">
         {/* Sender Info */}
         {newInvoice.senderInfo && (
           <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-            <Text className="mb-2 text-lg font-bold">Sender Information</Text>
+            <Text className="mb-2 text-lg font-bold text-slate-500 underline">Sender Information</Text>
             <View className="gap-1">
               <Text>Name: {newInvoice.senderInfo.name}</Text>
               <Text>Address: {newInvoice.senderInfo.address}</Text>
@@ -30,7 +50,7 @@ export default function InvoiceSummary() {
         {/* Recipient Info */}
         {newInvoice.recipientInfo && (
           <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-            <Text className="mb-2 text-lg font-bold">Recipient Information</Text>
+            <Text className="mb-2 text-lg font-bold text-slate-500 underline">Recipient Information</Text>
             <View className="gap-1">
               <Text>Name: {newInvoice.recipientInfo.name}</Text>
               <Text>Address: {newInvoice.recipientInfo.address}</Text>
@@ -40,46 +60,32 @@ export default function InvoiceSummary() {
           </View>
         )}
 
-        {/* Invoice Details */}
-        <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-          <Text className="mb-2 text-lg font-bold">Invoice Details</Text>
-          <Text>Invoice Number: {newInvoice.invoiceInfo?.invoiceNumber}</Text>
-          <Text>Date: {newInvoice.invoiceInfo?.date}</Text>
-          <Text>Due Date: {newInvoice.invoiceInfo?.dueDate}</Text>
-        </View>
-
+        {/* Items */}
         <View className="mb-4 rounded-lg bg-white p-4 shadow-sm ">
-          <Text className="mb-2 text-lg font-bold">Items</Text>
+          <Text className="mb-2 text-lg font-bold text-slate-500 underline">Items</Text>
 
           {/* Header Row */}
-          <View className="flex- mb-2 flex-row justify-between">
-            <Text className="flex-1 font-bold ">Name</Text>
-            <View className="flex-2 flex-row font-bold  ">
-              <Text className="w-24 text-right font-bold ">Price</Text>
+          <View className="mb-2 flex-row justify-between">
+            <Text className="flex-1 font-bold">Name</Text>
+            <View className="flex-2 flex-row">
+              <Text className="w-24 text-right font-bold">Price</Text>
               <Text className="w-24 text-right font-bold">Quantity</Text>
-              <Text className="ml-3 w-24 bg-amber-300 text-right font-bold">Total</Text>
+              <Text className="ml-3 w-24 text-right font-bold">Total</Text>
             </View>
           </View>
 
           {/* Items */}
           {newInvoice.items?.map((item, index) => (
             <View key={index} className="mb-2 flex-row justify-between">
-              {/* Item Name */}
               <Text className="flex-1">{item.name}</Text>
-
-              {/* Item Price */}
               <Text className="w-24 text-right">${item.price.toFixed(2)}</Text>
-
-              {/* Item Quantity */}
               <Text className="w-24 text-right">{item.quantity}</Text>
-
-              {/* Item Total */}
               <Text className="w-24 text-right">${(item.price * item.quantity).toFixed(2)}</Text>
             </View>
           ))}
 
           {/* Summary */}
-          <View className="mt-4 border-t pt-2">
+          <View className="mt-4 border-t border-gray-400 pt-2">
             <View className="flex-row justify-between">
               <Text className="text-lg font-bold">Subtotal</Text>
               <Text className="text-md font-bold">${getSubTotal().toFixed(2)}</Text>
@@ -90,10 +96,7 @@ export default function InvoiceSummary() {
             </View>
             <View className="flex-row justify-between">
               <Text className="text-lg font-bold">Total</Text>
-              <Text className="text-lg font-bold">
-                ${getTotal().toFixed(2)}
-
-              </Text>
+              <Text className="text-lg font-bold">${getTotal().toFixed(2)}</Text>
             </View>
           </View>
         </View>
@@ -101,8 +104,8 @@ export default function InvoiceSummary() {
 
       {/* Button */}
       <Button
-        title="Confirm and Submit"
-        className="mb-6 mt-4 "
+        title="Generate Invoice"
+        className="mb-8 mt-auto mx-4"
         onPress={() => console.log('Invoice Submitted')}
       />
     </View>
