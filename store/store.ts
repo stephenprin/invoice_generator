@@ -14,6 +14,7 @@ export type InvoiceState = {
   getTotal: () => number;
 };
 
+
 export const useStore = create<InvoiceState>((set, get) => ({
   newInvoice: {},
   addSenderInfo: (senderInfo) =>

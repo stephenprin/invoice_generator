@@ -3,13 +3,19 @@ import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '~/components/Button';
+import { Invoice } from '~/schema/invoice';
 import { useStore } from '~/store/store';
+import { generateInvoicePDF } from '~/utils/pdf';
 
 export default function InvoiceSummary() {
   const newInvoice = useStore((data) => data.newInvoice);
   const getSubTotal = useStore((data) => data.getSubTotal);
   const getTax = useStore((data) => data.getTax);
   const getTotal = useStore((data) => data.getTotal);
+
+  const handleGeneratePDF = () => {
+    generateInvoicePDF(newInvoice as Invoice, getTotal, getTax, getSubTotal);
+  };
 
   return (
     <View className="flex-1 bg-gray-100">
@@ -19,15 +25,21 @@ export default function InvoiceSummary() {
           Invoice #{newInvoice.invoiceInfo?.invoiceNumber || 'N/A'}
         </Text>
         <View className="mt-3 flex-row justify-between">
-
           <View className="flex-col items-start">
             <Text className="text-sm font-medium color-gray-500"> Date</Text>
-            <Text className="font-medium"> {new Date(newInvoice.invoiceInfo?.date || '').toLocaleDateString()}</Text>
+            <Text className="font-medium">
+              {' '}
+              {new Date(newInvoice.invoiceInfo?.date || '').toLocaleDateString()}
+            </Text>
           </View>
-          <View className="flex-col items-start
+          <View
+            className="flex-col items-start
           ">
             <Text className="text-sm font-medium color-gray-500">Due Date</Text>
-            <Text className="font-medium"> {new Date(newInvoice.invoiceInfo?.dueDate || '').toLocaleDateString()}</Text>
+            <Text className="font-medium">
+              {' '}
+              {new Date(newInvoice.invoiceInfo?.dueDate || '').toLocaleDateString()}
+            </Text>
           </View>
         </View>
       </View>
@@ -37,7 +49,9 @@ export default function InvoiceSummary() {
         {/* Sender Info */}
         {newInvoice.senderInfo && (
           <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-            <Text className="mb-2 text-lg font-bold text-slate-500 underline">Sender Information</Text>
+            <Text className="mb-2 text-lg font-bold text-slate-500 underline">
+              Sender Information
+            </Text>
             <View className="gap-1">
               <Text>Name: {newInvoice.senderInfo.name}</Text>
               <Text>Address: {newInvoice.senderInfo.address}</Text>
@@ -50,7 +64,9 @@ export default function InvoiceSummary() {
         {/* Recipient Info */}
         {newInvoice.recipientInfo && (
           <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-            <Text className="mb-2 text-lg font-bold text-slate-500 underline">Recipient Information</Text>
+            <Text className="mb-2 text-lg font-bold text-slate-500 underline">
+              Recipient Information
+            </Text>
             <View className="gap-1">
               <Text>Name: {newInvoice.recipientInfo.name}</Text>
               <Text>Address: {newInvoice.recipientInfo.address}</Text>
@@ -103,11 +119,7 @@ export default function InvoiceSummary() {
       </ScrollView>
 
       {/* Button */}
-      <Button
-        title="Generate Invoice"
-        className="mb-8 mt-auto mx-4"
-        onPress={() => console.log('Invoice Submitted')}
-      />
+      <Button title="Generate Invoice" className="mx-4 mb-8 mt-auto" onPress={handleGeneratePDF} />
     </View>
   );
 }
