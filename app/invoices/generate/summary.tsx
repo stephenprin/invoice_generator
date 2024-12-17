@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,9 +14,7 @@ export default function InvoiceSummary() {
   const getTax = useStore((data) => data.getTax);
   const getTotal = useStore((data) => data.getTotal);
 
-  const handleGeneratePDF = () => {
-    generateInvoicePDF(newInvoice as Invoice, getTotal, getTax, getSubTotal);
-  };
+
 
   return (
     <View className="flex-1 bg-gray-100">
@@ -118,8 +117,9 @@ export default function InvoiceSummary() {
         </View>
       </ScrollView>
 
-      {/* Button */}
-      <Button title="Generate Invoice" className="mx-4 mb-8 mt-auto" onPress={handleGeneratePDF} />
+      <Link href="/invoices/generate/success" asChild>
+        <Button title="Generate Invoice" className="mx-4 mb-8 mt-auto" />
+      </Link>
     </View>
   );
 }

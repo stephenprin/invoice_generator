@@ -203,11 +203,11 @@ const generateHtml = (invoice: Invoice, getTotal, getTax, getSubTotal) => {
 export const generateInvoicePDF = async (invoice: Invoice,getTotal, getTax, getSubTotal) => {
   // On iOS/android prints the given html. On web prints the HTML from the current page.
   const { uri } = await printToFileAsync({ html: generateHtml(invoice, getTotal, getTax, getSubTotal) });
-  const permanentUri = FileSystem.documentDirectory + 'invoice.pdf';
+  const permanentUri = FileSystem.documentDirectory + `invoice.pdf-${invoice.invoiceInfo.invoiceNumber}.pdf`;
   await FileSystem.moveAsync({
     from: uri,
     to: permanentUri,
   });
-  console.log('File has been saved to:', uri);
-  await shareAsync(permanentUri, { UTI: '.pdf', mimeType: 'application/pdf' });
+  return permanentUri
+
 };

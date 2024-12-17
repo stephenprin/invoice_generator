@@ -33,6 +33,13 @@ export default function GenerateInvoiceLayout() {
           title: 'Summary',
         }}
       />
+      <Stack.Screen
+        name="success"
+        options={{
+          title:"Success",
+          // headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
